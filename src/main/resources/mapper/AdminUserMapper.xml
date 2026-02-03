@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssg.echodairy.mapper.AdminUserMapper">
+
+    <select id="findAllUsers"
+            resultType="com.ssg.echodairy.dto.AdminUserDto">
+
+        SELECT
+            c.user_id           AS userId,
+            c.login_id        AS loginId,
+            c.nickname     AS nickname,
+            c.role         AS role,
+            c.created_at   AS createdAt
+        FROM client c where  c.role = 'USER'
+        ORDER BY c.created_at DESC
+
+    </select>
+
+</mapper>

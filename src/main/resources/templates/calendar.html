@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <title>EchoDiary | Calendar</title>
+
+    <style>
+        :root {
+            --teal:#2f8f8b;
+            --teal-soft:#e8f4f3;
+            --orange:#f28c38;
+            --cream:#fff7ee;
+            --bg:#f5f7f6;
+            --text-main:#2b2b2b;
+            --text-sub:#6b7280;
+            --border:#e6e6e6;
+        }
+
+        * {
+            box-sizing:border-box;
+            margin:0;
+            padding:0;
+            font-family:"Pretendard","Apple SD Gothic Neo",sans-serif;
+        }
+
+        body {
+            background:var(--bg);
+            color:var(--text-main);
+        }
+
+        /* Top Bar */
+        .top-bar {
+            height:64px;
+            background:#ffffff;
+            border-bottom:1px solid var(--border);
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            padding:0 28px;
+        }
+
+        .logo {
+            font-size:22px;
+            font-weight:700;
+            color:var(--teal);
+        }
+
+        .user-info span {
+            font-size:14px;
+            color:var(--text-sub);
+            margin-right:12px;
+        }
+
+        .logout {
+            background:var(--teal);
+            color:#fff;
+            border:none;
+            border-radius:20px;
+            padding:6px 14px;
+            cursor:pointer;
+        }
+
+        /* Layout */
+        .container {
+            display:flex;
+            height:calc(100vh - 64px);
+        }
+
+        /* Sidebar - 첫 번째 파일 스타일 적용 */
+        .sidebar {
+            width:220px;
+            background:#ffffff;
+            border-right:1px solid var(--border);
+            padding-top:24px;
+        }
+
+        .sidebar ul {
+            list-style:none;
+        }
+
+        .sidebar li {
+            padding:14px 24px;
+            cursor:pointer;
+            color:var(--text-sub);
+            font-size:14px;
+            position:relative;
+        }
+
+        .sidebar li.active {
+            background:#fff3e6;
+            color:var(--orange);
+            font-weight:600;
+            border-radius:0 20px 20px 0;
+        }
+
+        .sidebar li.active::before {
+            content:"";
+            position:absolute;
+            left:0;
+            top:10%;
+            width:4px;
+            height:80%;
+            background:var(--teal);
+            border-radius:0 4px 4px 0;
+        }
+
+        /* Main */
+        .main {
+            flex:1;
+            padding:36px;
+            overflow-y:auto;
+        }
+
+        .calendar-card {
+            background:white;
+            border-radius:20px;
+            padding:32px;
+            box-shadow:0 10px 26px rgba(0,0,0,0.06);
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+        }
+
+        .calendar-header {
+            display:flex;
+            align-items:center;
+            gap:12px;
+            background:var(--cream);
+            padding:10px 18px;
+            border-radius:999px;
+            margin-bottom:28px;
+        }
+
+        .month-btn {
+            width:36px;
+            height:36px;
+            border-radius:50%;
+            border:none;
+            background:var(--teal-soft);
+            color:var(--teal);
+            font-size:18px;
+            cursor:pointer;
+        }
+
+        .select-box {
+            padding:8px 16px;
+            border-radius:999px;
+            border:2px solid var(--border);
+            font-weight:600;
+        }
+
+        .menu-link {
+            display: block;
+            color: inherit;
+            text-decoration: none;
+        }
+
+
+        .weekdays {
+            width:100%;
+            display:grid;
+            grid-template-columns:repeat(7,1fr);
+            text-align:center;
+            font-size:13px;
+            font-weight:600;
+            color:var(--text-sub);
+            margin-bottom:12px;
+        }
+
+        .calendar-grid {
+            width:100%;
+            display:grid;
+            grid-template-columns:repeat(7,1fr);
+            gap:14px;
+        }
+
+        .day {
+            height:96px;
+            background:var(--cream);
+            border-radius:16px;
+            padding:10px;
+            cursor:pointer;
+            transition:.15s;
+        }
+
+        .day:hover {
+            background:#fff1de;
+            transform:translateY(-2px);
+        }
+
+        .day.empty {
+            background:transparent;
+            cursor:default;
+        }
+
+        .date {
+            font-weight:700;
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="top-bar">
+    <div class="logo">EchoDiary</div>
+    <div class="user-info">
+        <span th:text="${nickname} + '님 환영합니다'">닉네임님 환영합니다</span>
+
+        <form action="/logout" method="post" style="display:inline;">
+            <button type="submit" class="logout">로그아웃</button>
+        </form>
+    </div>
+</header>
+
+<div class="container">
+
+    <nav class="sidebar">
+        <ul>
+
+            <li class="active">
+                <a href="/calendar" class="menu-link">캘린더</a>
+            </li>
+            <li>
+                <a href="/weekly-report" class="menu-link">주간 리포트</a>
+            </li>
+            <li>
+                <a href="/settings" class="menu-link">설정</a>
+            </li>
+        </ul>
+    </nav>
+
+    <main class="main">
+        <section class="calendar-card">
+
+            <div class="calendar-header">
+                <button class="month-btn" id="prev">&lt;</button>
+                <select id="yearSelect" class="select-box"></select>
+                <select id="monthSelect" class="select-box"></select>
+                <button class="month-btn" id="next">&gt;</button>
+            </div>
+
+            <div class="weekdays">
+                <div>일</div><div>월</div><div>화</div>
+                <div>수</div><div>목</div><div>금</div><div>토</div>
+            </div>
+
+            <div class="calendar-grid" id="calendarGrid"></div>
+
+        </section>
+    </main>
+</div>
+
+<script>
+    let currentYear = new Date().getFullYear();
+    let currentMonth = new Date().getMonth();
+
+    const grid = document.getElementById("calendarGrid");
+    const yearSelect = document.getElementById("yearSelect");
+    const monthSelect = document.getElementById("monthSelect");
+
+    for (let y=2020; y<=2030; y++) {
+        yearSelect.innerHTML += `<option value="${y}">${y}년</option>`;
+    }
+    for (let m=0; m<12; m++) {
+        monthSelect.innerHTML += `<option value="${m}">${m+1}월</option>`;
+    }
+
+    yearSelect.value = currentYear;
+    monthSelect.value = currentMonth;
+
+    function renderCalendar(y,m) {
+        grid.innerHTML="";
+        const firstDay = new Date(y,m,1).getDay();
+        const lastDate = new Date(y,m+1,0).getDate();
+
+        for(let i=0;i<firstDay;i++){
+            grid.innerHTML+=`<div class="day empty"></div>`;
+        }
+
+        for(let d=1; d<=lastDate; d++){
+            const div=document.createElement("div");
+            div.className="day";
+            div.innerHTML=`<span class="date">${d}</span>`;
+            div.onclick=()=>{
+                const dateStr =
+                    `${y}-${String(m+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+                location.href = `/todaysnote?date=${dateStr}`;
+            };
+            grid.appendChild(div);
+        }
+    }
+
+    document.getElementById("prev").onclick=()=>{
+        currentMonth--;
+        if(currentMonth<0){currentMonth=11;currentYear--;}
+        yearSelect.value=currentYear;
+        monthSelect.value=currentMonth;
+        renderCalendar(currentYear,currentMonth);
+    };
+
+    document.getElementById("next").onclick=()=>{
+        currentMonth++;
+        if(currentMonth>11){currentMonth=0;currentYear++;}
+        yearSelect.value=currentYear;
+        monthSelect.value=currentMonth;
+        renderCalendar(currentYear,currentMonth);
+    };
+
+    yearSelect.onchange = monthSelect.onchange = ()=>{
+        currentYear=+yearSelect.value;
+        currentMonth=+monthSelect.value;
+        renderCalendar(currentYear,currentMonth);
+    };
+
+    renderCalendar(currentYear,currentMonth);
+
+    window.addEventListener("pageshow", function (e) {
+        if (e.persisted) {
+            location.reload();
+        }
+    });
+
+
+</script>
+
+</body>
+</html>

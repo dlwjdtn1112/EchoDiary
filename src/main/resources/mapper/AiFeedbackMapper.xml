@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssg.echodairy.mapper.AiFeedbackMapper">
+
+    <insert id="insertFeedback">
+        INSERT INTO ai_feedback (
+            diary_id,
+            user_id,
+            content,
+            prompt_version
+        ) VALUES (
+                     #{diaryId},
+                     #{userId},
+                     #{content},
+                     #{promptVersion}
+                 )
+    </insert>
+
+<!--    <select id="findFeedbackContents" resultType="string">-->
+<!--        SELECT content-->
+<!--        FROM ai_feedback-->
+<!--        WHERE user_id = #{userId}-->
+<!--          AND created_at BETWEEN #{startDate} AND #{endDate}-->
+<!--        ORDER BY created_at ASC-->
+<!--    </select>-->
+
+    <select id="findFeedbackContents" resultType="string">
+        SELECT af.content
+        FROM ai_feedback af
+                 JOIN diary d ON af.diary_id = d.diary_id
+        WHERE af.user_id = #{userId}
+          AND d.diary_date BETWEEN #{startDate} AND #{endDate}
+        ORDER BY d.diary_date ASC
+    </select>
+
+</mapper>

@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <title>EchoDiary | Login</title>
+
+    <style>
+        :root {
+            --teal: #2f8f8b;
+            --teal-soft: #e6f4f3;
+            --orange: #f28c38;
+            --cream: #fff8ee;
+            --bg: #f5f7f6;
+            --text-main: #2b2b2b;
+            --text-sub: #6b7280;
+            --border: #e6e6e6;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: "Pretendard", "Apple SD Gothic Neo", sans-serif;
+        }
+
+        body {
+            background: linear-gradient(
+                    180deg,
+                    var(--bg),
+                    var(--cream)
+            );
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--text-main);
+        }
+
+        /* =====================
+           Login Container
+        ===================== */
+        .login-wrapper {
+            width: 100%;
+            max-width: 420px;
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 48px 40px;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+            position: relative;
+        }
+
+        /* Orange Accent Line */
+        .login-wrapper::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(
+                    90deg,
+                    var(--orange),
+                    var(--teal)
+            );
+            border-radius: 20px 20px 0 0;
+        }
+
+        /* Logo */
+        .logo {
+            text-align: center;
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--teal);
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 14px;
+            color: var(--text-sub);
+            margin-bottom: 36px;
+        }
+
+        .subtitle span {
+            color: var(--orange);
+            font-weight: 600;
+        }
+
+        /* =====================
+           Form
+        ===================== */
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .field label {
+            font-size: 13px;
+            color: var(--text-sub);
+        }
+
+        .field input {
+            height: 44px;
+            padding: 0 14px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            font-size: 14px;
+        }
+
+        .field input:focus {
+            outline: none;
+            border-color: var(--orange);
+            background: #fff4e8;
+        }
+
+        /* Login Button */
+        .login-btn {
+            margin-top: 12px;
+            height: 48px;
+            background: var(--teal);
+            color: white;
+            border: none;
+            border-radius: 24px;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .login-btn:hover {
+            background: var(--orange);
+            box-shadow: 0 6px 14px rgba(242,140,56,0.35);
+        }
+
+        /* =====================
+           Extra Links
+        ===================== */
+        .links {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 18px;
+            font-size: 13px;
+        }
+
+        .links a {
+            color: var(--text-sub);
+            text-decoration: none;
+        }
+
+        .links a:hover {
+            color: var(--orange);
+        }
+
+        /* =====================
+           Footer Text
+        ===================== */
+        .footer-text {
+            margin-top: 36px;
+            text-align: center;
+            font-size: 13px;
+            color: var(--text-sub);
+        }
+
+        .footer-text span {
+            color: var(--orange);
+            font-weight: 600;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="login-wrapper">
+
+    <div class="logo">EchoDiary</div>
+    <div class="subtitle">
+        하루를 기록하고, <span>Echo</span>를 들어보세요
+    </div>
+
+    <form class="login-form" method="post" action="/login">
+        <div class="field">
+            <label>아이디</label>
+            <input type="text"
+                   name="loginId"
+                   placeholder="아이디를 입력하세요" />
+        </div>
+
+        <div class="field">
+            <label>비밀번호</label>
+            <input type="password"
+                   name="password"
+                   placeholder="비밀번호를 입력하세요" />
+        </div>
+
+        <button type="submit" class="login-btn">로그인</button>
+    </form>
+
+
+    <div class="links">
+        <a href="#">아이디 찾기</a>
+        <a href="#">비밀번호 찾기</a>
+    </div>
+
+    <div class="footer-text">
+        아직 계정이 없으신가요?
+        <a href="/signup"><span>회원가입</span></a>
+    </div>
+
+
+</div>
+
+</body>
+</html>
+
+<script>
+    const params = new URLSearchParams(window.location.search);
+    const error = params.get("error");
+
+    if (error === "notfound") {
+        alert("존재하지 않는 아이디입니다.");
+    }
+
+    if (error === "wrongpw") {
+        alert("비밀번호가 일치하지 않습니다.");
+    }
+
+    /* 로그인 페이지에 도착하면 히스토리 고정 */
+    if (window.history.replaceState) {
+        window.history.replaceState(null, "", window.location.href);
+    }
+
+    /* 🔥 뒤로/앞으로(BFCache)로 복원되면 강제 새로고침 */
+    window.addEventListener("pageshow", function (e) {
+        if (e.persisted) {
+            location.replace("/login");
+        }
+    });
+</script>
+
+
+
+
+
+
+
+
+
+

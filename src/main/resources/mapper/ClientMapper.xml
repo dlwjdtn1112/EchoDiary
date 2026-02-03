@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssg.echodairy.mapper.ClientMapper">
+
+    <!-- =========================
+         로그인 조회 (핵심 수정)
+    ========================= -->
+    <select id="findByLoginId"
+            parameterType="string"
+            resultType="com.ssg.echodairy.domain.Client">
+        SELECT
+        user_id     AS userId,
+        login_id    AS loginId,     <!-- 🔥 핵심: 누락되었던 컬럼 -->
+        password,
+        nickname,
+        role,
+        created_at AS createdAt
+        FROM client
+        WHERE login_id = #{loginId}
+    </select>
+
+    <!-- =========================
+         userId 기반 조회
+    ========================= -->
+    <select id="findByUserId"
+            parameterType="long"
+            resultType="com.ssg.echodairy.domain.Client">
+        SELECT
+            user_id     AS userId,
+            login_id    AS loginId,
+            password,
+            nickname,
+            role,
+            created_at AS createdAt
+        FROM client
+        WHERE user_id = #{userid}
+    </select>
+
+    <!-- =========================
+         아이디 중복 체크
+    ========================= -->
+    <select id="existsByLoginId"
+            parameterType="string"
+            resultType="boolean">
+        SELECT COUNT(*) > 0
+        FROM client
+        WHERE login_id = #{loginId}
+    </select>
+
+    <!-- =========================
+         닉네임 중복 체크
+    ========================= -->
+    <select id="existsByNickname"
+            parameterType="string"
+            resultType="boolean">
+        SELECT COUNT(*) > 0
+        FROM client
+        WHERE nickname = #{nickname}
+    </select>
+
+    <!-- =========================
+         회원가입
+    ========================= -->
+    <insert id="insertClient">
+        INSERT INTO client (login_id, password, nickname,email)
+        VALUES (#{loginId}, #{password}, #{nickname}, #{email})
+    </insert>
+
+    <select id="existsByEmail"
+            parameterType="string"
+            resultType="int">
+        SELECT COUNT(*) > 0
+        FROM client
+        WHERE email = #{email}
+    </select>
+
+</mapper>

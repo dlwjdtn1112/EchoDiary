@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <title>EchoDiary | 회원가입</title>
+
+    <style>
+        :root {
+            --teal: #2f8f8b;
+            --teal-soft: #e6f4f3;
+            --orange: #f28c38;
+            --cream: #fff8ee;
+            --bg: #f5f7f6;
+            --text-main: #2b2b2b;
+            --text-sub: #6b7280;
+            --border: #e6e6e6;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: "Pretendard", "Apple SD Gothic Neo", sans-serif;
+        }
+
+        body {
+            background: linear-gradient(
+                    180deg,
+                    var(--bg),
+                    var(--cream)
+            );
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--text-main);
+        }
+
+        .signup-wrapper {
+            width: 100%;
+            max-width: 460px;
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 48px 40px;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+            position: relative;
+        }
+
+        .signup-wrapper::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(
+                    90deg,
+                    var(--orange),
+                    var(--teal)
+            );
+            border-radius: 20px 20px 0 0;
+        }
+
+        .logo {
+            text-align: center;
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--teal);
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 14px;
+            color: var(--text-sub);
+            margin-bottom: 36px;
+        }
+
+        .subtitle span {
+            color: var(--orange);
+            font-weight: 600;
+        }
+
+        .signup-form {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .field label {
+            font-size: 13px;
+            color: var(--text-sub);
+        }
+
+        .field input {
+            height: 44px;
+            padding: 0 14px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            font-size: 14px;
+        }
+
+        .field input:focus {
+            outline: none;
+            border-color: var(--orange);
+            background: #fff4e8;
+        }
+
+        .inline-group {
+            display: flex;
+            gap: 8px;
+        }
+
+        .inline-group button {
+            padding: 0 14px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: #fff;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .inline-group button:hover {
+            background: var(--teal-soft);
+        }
+
+        .msg {
+            font-size: 12px;
+            color: var(--text-sub);
+        }
+
+        .success {
+            color: var(--teal);
+        }
+
+        .error {
+            color: #e54848;
+        }
+
+        .signup-btn {
+            margin-top: 12px;
+            height: 48px;
+            background: var(--teal);
+            color: white;
+            border: none;
+            border-radius: 24px;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .signup-btn:hover {
+            background: var(--orange);
+            box-shadow: 0 6px 14px rgba(242,140,56,0.35);
+        }
+
+        .footer-text {
+            margin-top: 36px;
+            text-align: center;
+            font-size: 13px;
+            color: var(--text-sub);
+        }
+
+        .footer-text a {
+            color: var(--orange);
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .footer-text a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="signup-wrapper">
+
+    <div class="logo">EchoDiary</div>
+    <div class="subtitle">
+        간단한 정보로 <span>EchoDiary</span>를 시작하세요
+    </div>
+
+    <form class="signup-form" method="post" action="/signup" onsubmit="return validateSignup()">
+
+        <!-- 이메일 -->
+        <div class="field">
+            <label>이메일</label>
+            <div class="inline-group">
+                <input type="email" id="email" name="email" placeholder="이메일 입력" required />
+                <button type="button" onclick="checkEmail()">중복확인</button>
+            </div>
+            <div id="emailMsg" class="msg"></div>
+        </div>
+
+        <!-- 인증번호 -->
+        <div class="field">
+            <label>인증번호</label>
+            <div class="inline-group">
+                <input type="text" id="code" placeholder="6자리 인증번호" />
+                <button type="button" onclick="sendCode()">전송</button>
+                <button type="button" onclick="verifyCode()">확인</button>
+            </div>
+            <div id="codeMsg" class="msg"></div>
+        </div>
+
+        <!-- 기존 필드 유지 -->
+        <div class="field">
+            <label>아이디</label>
+            <input type="text" name="loginId" placeholder="아이디를 입력하세요" required />
+        </div>
+
+        <div class="field">
+            <label>비밀번호</label>
+            <input type="password" name="password" placeholder="비밀번호를 입력하세요" required />
+        </div>
+
+        <div class="field">
+            <label>비밀번호 확인</label>
+            <input type="password" name="passwordConfirm" placeholder="비밀번호를 다시 입력하세요" required />
+        </div>
+
+        <div class="field">
+            <label>닉네임</label>
+            <input type="text" name="nickname" placeholder="사용할 닉네임을 입력하세요" required />
+        </div>
+
+        <button type="submit" class="signup-btn">회원가입</button>
+    </form>
+
+    <div class="footer-text">
+        이미 계정이 있으신가요?
+        <a href="/login">로그인</a>
+    </div>
+
+</div>
+
+<script>
+    let emailChecked = false;
+    let emailVerified = false;
+
+    function checkEmail() {
+        const email = document.getElementById("email").value;
+
+        fetch(`/auth/email/check?email=${email}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.available) {
+                    emailChecked = true;
+                    document.getElementById("emailMsg").textContent = "사용 가능한 이메일입니다.";
+                    document.getElementById("emailMsg").className = "msg success";
+                } else {
+                    emailChecked = false;
+                    document.getElementById("emailMsg").textContent = "이미 사용 중인 이메일입니다.";
+                    document.getElementById("emailMsg").className = "msg error";
+                }
+            });
+    }
+
+    function sendCode() {
+        if (!emailChecked) {
+            alert("이메일 중복 확인이 필요합니다.");
+            return;
+        }
+
+        fetch("/auth/email/send", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email: email.value })
+        });
+    }
+
+    function verifyCode() {
+        fetch("/auth/email/verify", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                email: email.value,
+                code: document.getElementById("code").value
+            })
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    emailVerified = true;
+                    document.getElementById("codeMsg").textContent = "이메일 인증 완료";
+                    document.getElementById("codeMsg").className = "msg success";
+                } else {
+                    emailVerified = false;
+                    document.getElementById("codeMsg").textContent = "인증번호가 올바르지 않습니다";
+                    document.getElementById("codeMsg").className = "msg error";
+                }
+            });
+    }
+
+    function validateSignup() {
+        if (!emailChecked || !emailVerified) {
+            alert("이메일 인증을 완료해야 회원가입이 가능합니다.");
+            return false;
+        }
+        return true;
+    }
+</script>
+
+</body>
+</html>

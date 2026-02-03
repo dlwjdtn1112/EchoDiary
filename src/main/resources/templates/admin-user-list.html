@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <title>EchoDiary | Admin - Users</title>
+
+    <style>
+        :root {
+            --teal:#2f8f8b;
+            --teal-soft:#e8f4f3;
+            --orange:#f28c38;
+            --cream:#fff7ee;
+            --bg:#f5f7f6;
+            --text-main:#2b2b2b;
+            --text-sub:#6b7280;
+            --border:#e6e6e6;
+        }
+
+        * {
+            box-sizing:border-box;
+            margin:0;
+            padding:0;
+            font-family:"Pretendard","Apple SD Gothic Neo",sans-serif;
+        }
+
+        body {
+            background:var(--bg);
+            color:var(--text-main);
+        }
+
+        .top-bar {
+            height:64px;
+            background:#ffffff;
+            border-bottom:1px solid var(--border);
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            padding:0 28px;
+        }
+
+        .logo {
+            font-size:22px;
+            font-weight:700;
+            color:var(--teal);
+        }
+
+        .user-info span {
+            font-size:14px;
+            color:var(--text-sub);
+            margin-right:12px;
+        }
+
+        .logout {
+            background:var(--teal);
+            color:#fff;
+            border:none;
+            border-radius:20px;
+            padding:6px 14px;
+            cursor:pointer;
+        }
+
+        .container {
+            display:flex;
+            height:calc(100vh - 64px);
+        }
+
+        .sidebar {
+            width:220px;
+            background:#ffffff;
+            border-right:1px solid var(--border);
+            padding-top:24px;
+        }
+
+        .sidebar ul {
+            list-style:none;
+        }
+
+        .sidebar li {
+            padding:14px 24px;
+            cursor:pointer;
+            color:var(--text-sub);
+            font-size:14px;
+            position:relative;
+        }
+
+        .sidebar li.active {
+            background:#fff3e6;
+            color:var(--orange);
+            font-weight:600;
+            border-radius:0 20px 20px 0;
+        }
+
+        .sidebar li.active::before {
+            content:"";
+            position:absolute;
+            left:0;
+            top:10%;
+            width:4px;
+            height:80%;
+            background:var(--teal);
+            border-radius:0 4px 4px 0;
+        }
+
+        .menu-link {
+            display:block;
+            color:inherit;
+            text-decoration:none;
+        }
+
+        .main {
+            flex:1;
+            padding:36px;
+            overflow-y:auto;
+        }
+
+        .card {
+            background:white;
+            border-radius:20px;
+            padding:32px;
+            box-shadow:0 10px 26px rgba(0,0,0,0.06);
+        }
+
+        .card-title {
+            font-size:20px;
+            font-weight:700;
+            margin-bottom:24px;
+        }
+
+        table {
+            width:100%;
+            border-collapse:collapse;
+            font-size:14px;
+        }
+
+        thead {
+            background:var(--teal-soft);
+        }
+
+        th, td {
+            padding:12px;
+            border-bottom:1px solid var(--border);
+            text-align:left;
+        }
+
+        tbody tr:hover {
+            background:#fafafa;
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="top-bar">
+    <div class="logo">EchoDiary Admin</div>
+    <div class="user-info">
+        <span th:text="${nickname} + ' 관리자님'">관리자님</span>
+        <form action="/logout" method="post" style="display:inline;">
+            <button type="submit" class="logout">로그아웃</button>
+        </form>
+    </div>
+</header>
+
+<div class="container">
+
+    <nav class="sidebar">
+        <ul>
+            <li class="active">
+                <a href="/admin/users" class="menu-link">회원 관리</a>
+            </li>
+            <li>
+                <a href="/admin/stats" class="menu-link">통계</a>
+            </li>
+            <li>
+                <a href="/admin/settings" class="menu-link">설정</a>
+            </li>
+        </ul>
+    </nav>
+
+    <main class="main">
+        <section class="card">
+            <div class="card-title">전체 회원 목록</div>
+
+            <table>
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>로그인 ID</th>
+                    <th>닉네임</th>
+                    <th>권한</th>
+                    <th>가입일</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="user : ${users}">
+                    <td th:text="${user.userId}">1</td>
+                    <td th:text="${user.loginId}">test_id</td>
+                    <td th:text="${user.nickname}">닉네임</td>
+                    <td th:text="${user.role}">USER</td>
+                    <td th:text="${#temporals.format(user.createdAt,'yyyy-MM-dd')}">
+                        2026-01-01
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+</div>
+
+</body>
+</html>

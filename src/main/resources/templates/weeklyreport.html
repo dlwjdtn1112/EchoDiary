@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <title>EchoDiary | Weekly Report</title>
+
+    <style>
+        :root {
+            --teal: #2f8f8b;
+            --teal-soft: #e6f4f3;
+            --orange: #f28c38;
+            --cream: #fff8ee;
+            --bg: #f5f7f6;
+            --text-main: #2b2b2b;
+            --text-sub: #6b7280;
+            --border: #e6e6e6;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: "Pretendard", "Apple SD Gothic Neo", sans-serif;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text-main);
+        }
+
+        /* Top Bar */
+        .top-bar {
+            height: 64px;
+            background: #ffffff;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 28px;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--teal);
+        }
+
+        .user-info span {
+            font-size: 14px;
+            color: var(--text-sub);
+            margin-right: 12px;
+        }
+
+        .logout {
+            background: var(--teal);
+            color: #fff;
+            border: none;
+            border-radius: 20px;
+            padding: 6px 14px;
+            cursor: pointer;
+        }
+
+        /* Layout */
+        .container {
+            display: flex;
+            height: calc(100vh - 64px);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 220px;
+            background: #ffffff;
+            border-right: 1px solid var(--border);
+            padding-top: 24px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+        }
+
+        .sidebar li {
+            padding: 14px 24px;
+            font-size: 14px;
+            color: var(--text-sub);
+        }
+
+        .sidebar li.active {
+            background: #fff3e6;
+            color: var(--orange);
+            font-weight: 600;
+            border-radius: 0 20px 20px 0;
+            position: relative;
+        }
+
+        .sidebar li.active::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 10%;
+            width: 4px;
+            height: 80%;
+            background: var(--teal);
+        }
+
+        .sidebar a {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Main */
+        .main {
+            flex: 1;
+            padding: 36px;
+            overflow-y: auto;
+        }
+
+        /* Weekly Report */
+        .weekly-report {
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+        }
+
+        .report-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .report-header h2 {
+            font-size: 22px;
+            color: var(--teal);
+        }
+
+        .report-header span {
+            font-size: 14px;
+            color: var(--text-sub);
+        }
+
+        .date-select {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .date-select input {
+            padding: 10px 14px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            font-size: 14px;
+        }
+
+        .btn {
+            padding: 10px 22px;
+            border-radius: 24px;
+            border: none;
+            font-size: 14px;
+            cursor: pointer;
+            background: var(--teal);
+            color: #fff;
+        }
+
+        .card {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+        }
+
+        .weekly-echo {
+            border-left: 6px solid var(--teal);
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="top-bar">
+    <div class="logo">EchoDiary</div>
+    <div class="user-info">
+        <span th:text="${nickname} + '님'">닉네임님</span>
+        <button class="logout" onclick="logout()">로그아웃</button>
+    </div>
+</header>
+
+<div class="container">
+
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <ul>
+            <li class="active">
+                <a href="/calendar" class="menu-link">캘린더</a>
+            </li>
+            <li>
+                <a href="/weekly-report" class="menu-link">주간 리포트</a>
+            </li>
+            <li>
+                <a href="/settings" class="menu-link">설정</a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Main -->
+    <main class="main">
+
+        <section class="weekly-report">
+
+            <div class="report-header">
+                <h2>주간 리포트</h2>
+                <span id="periodText">날짜를 선택해주세요</span>
+            </div>
+
+            <div class="date-select">
+                <input type="date" id="selectedDate">
+                <button class="btn" onclick="loadWeeklyReport()">조회</button>
+            </div>
+
+            <div class="card">
+                <h4>주간 요약</h4>
+                <p id="summaryText">AI가 이번 주를 요약합니다.</p>
+            </div>
+
+            <div class="card weekly-echo">
+                <h4>AI Weekly Echo</h4>
+                <p id="weeklyEchoText">이번 주의 흐름을 분석합니다.</p>
+            </div>
+
+        </section>
+
+    </main>
+</div>
+
+<script>
+    function loadWeeklyReport() {
+        const date = document.getElementById("selectedDate").value;
+        if (!date) {
+            alert("날짜를 선택해주세요.");
+            return;
+        }
+
+        fetch("/ai/weekly", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ date })
+        })
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById("periodText").innerText =
+                    `${data.startDate} ~ ${data.endDate}`;
+                document.getElementById("summaryText").innerText = data.summary;
+                document.getElementById("weeklyEchoText").innerText = data.echo;
+            })
+            .catch(() => alert("주간 리포트 조회 실패"));
+    }
+
+    function logout() {
+        fetch("/auth/logout", { method: "POST", credentials: "include" })
+            .finally(() => location.href = "/login");
+    }
+</script>
+
+</body>
+</html>

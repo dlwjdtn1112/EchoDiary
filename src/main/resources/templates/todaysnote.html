@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <title>EchoDiary</title>
+
+    <style>
+        :root {
+            --teal: #2f8f8b;
+            --teal-soft: #e6f4f3;
+            --orange: #f28c38;
+            --cream: #fff8ee;
+            --bg: #f5f7f6;
+            --text-main: #2b2b2b;
+            --text-sub: #6b7280;
+            --border: #e6e6e6;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: "Pretendard", "Apple SD Gothic Neo", sans-serif;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text-main);
+        }
+
+        /* Top Bar */
+        .top-bar {
+            height: 64px;
+            background: #ffffff;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 28px;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--teal);
+        }
+
+        .user-info span {
+            font-size: 14px;
+            color: var(--text-sub);
+            margin-right: 12px;
+        }
+
+        .logout {
+            background: var(--teal);
+            color: #fff;
+            border: none;
+            border-radius: 20px;
+            padding: 6px 14px;
+            cursor: pointer;
+        }
+
+        /* Layout */
+        .container {
+            display: flex;
+            height: calc(100vh - 64px);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 220px;
+            background: #ffffff;
+            border-right: 1px solid var(--border);
+            padding-top: 24px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+        }
+
+        .sidebar li {
+            padding: 14px 24px;
+            cursor: pointer;
+            color: var(--text-sub);
+            font-size: 14px;
+            position: relative;
+        }
+
+        .sidebar li.active {
+            background: #fff3e6;
+            color: var(--orange);
+            font-weight: 600;
+            border-radius: 0 20px 20px 0;
+        }
+
+        .sidebar li.active::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 10%;
+            width: 4px;
+            height: 80%;
+            background: var(--teal);
+            border-radius: 0 4px 4px 0;
+        }
+
+        /* Main */
+        .main {
+            flex: 1;
+            padding: 36px;
+            overflow-y: auto;
+        }
+
+        /* Card */
+        .today {
+            background: var(--cream);
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+            position: relative;
+        }
+
+        .today::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(
+                    90deg,
+                    var(--teal),
+                    #4fb3a2,
+                    var(--orange)
+            );
+            border-radius: 16px 16px 0 0;
+        }
+
+        .today h2 {
+            font-size: 22px;
+            margin-bottom: 20px;
+        }
+
+        /* Emotion */
+        .emotion label {
+            font-size: 14px;
+            color: var(--text-sub);
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .emotion-list button {
+            font-size: 22px;
+            margin-right: 10px;
+            padding: 10px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            background: #fff;
+            cursor: pointer;
+        }
+
+        .emotion-list button.selected {
+            border-color: var(--teal);
+            background: var(--teal-soft);
+        }
+
+        /* Diary */
+        .diary label {
+            font-size: 14px;
+            color: var(--text-sub);
+            margin: 20px 0 8px;
+            display: block;
+        }
+
+        .diary textarea {
+            width: 100%;
+            height: 160px;
+            padding: 16px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            font-size: 14px;
+            resize: none;
+        }
+
+        /* Buttons */
+        .btn-area {
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 24px;
+            border: none;
+            font-size: 14px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        .btn.save {
+            background: var(--orange);
+            color: #fff;
+        }
+
+        .btn.ai {
+            background: var(--teal);
+            color: #fff;
+        }
+
+        /* AI Result */
+        .ai-result {
+            margin-top: 24px;
+            padding: 20px;
+            background: #ffffff;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            white-space: pre-line;
+            display: none;
+        }
+        .menu-link {
+            display: block;
+            color: inherit;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="top-bar">
+    <div class="logo">EchoDiary</div>
+    <div class="user-info">
+        <span th:text="${nickname} + '님 환영합니다'">닉네임님 환영합니다</span>
+        <button class="logout">로그아웃</button>
+    </div>
+</header>
+
+<div class="container">
+
+    <nav class="sidebar">
+        <ul>
+
+            <li class="active">
+                <a href="/calendar" class="menu-link">캘린더</a>
+            </li>
+            <li>
+                <a href="/weekly-report" class="menu-link">주간 리포트</a>
+            </li>
+            <li>
+                <a href="/settings" class="menu-link">설정</a>
+            </li>
+        </ul>
+    </nav>
+
+    <main class="main">
+        <section class="today">
+            <h2 id="todayDate"></h2>
+
+            <div class="emotion">
+                <label>오늘의 감정</label>
+                <div class="emotion-list">
+                    <button data-emotion="😊">😊</button>
+                    <button data-emotion="😐">😐</button>
+                    <button data-emotion="😢">😢</button>
+                    <button data-emotion="😡">😡</button>
+                </div>
+            </div>
+
+            <div class="diary">
+                <label>오늘의 기록</label>
+                <textarea id="diaryText"></textarea>
+            </div>
+
+            <div class="btn-area">
+                <button class="btn save" onclick="saveDiary()">기록 저장</button>
+                <button class="btn ai" onclick="requestAI()">AI 응답 생성</button>
+            </div>
+
+            <div id="aiResult" class="ai-result"></div>
+        </section>
+    </main>
+</div>
+
+<script>
+    /* ===============================
+       날짜 파라미터
+    =============================== */
+    const params = new URLSearchParams(location.search);
+    const selectedDate = params.get("date");
+
+    if (!selectedDate) {
+        alert("날짜 정보가 없습니다.");
+        history.back();
+    }
+
+    document.getElementById("todayDate").innerText = selectedDate;
+
+    /* ===============================
+       감정 처리
+    =============================== */
+    let selectedEmotion = null;
+
+    const emotionMap = {
+        "😊": "HAPPY",
+        "😐": "NEUTRAL",
+        "😢": "SAD",
+        "😡": "ANGRY"
+    };
+
+    const reverseEmotionMap = {
+        "HAPPY": "😊",
+        "NEUTRAL": "😐",
+        "SAD": "😢",
+        "ANGRY": "😡"
+    };
+
+    document.querySelectorAll(".emotion-list button").forEach(btn => {
+        btn.addEventListener("click", () => {
+            document.querySelectorAll(".emotion-list button")
+                .forEach(b => b.classList.remove("selected"));
+            btn.classList.add("selected");
+            selectedEmotion = btn.dataset.emotion;
+        });
+    });
+
+    /* ===============================
+       저장
+    =============================== */
+    function saveDiary() {
+        const content = document.getElementById("diaryText").value;
+
+        if (!selectedEmotion || !content.trim()) {
+            alert("감정과 기록을 모두 입력해주세요.");
+            return;
+        }
+
+        fetch("/today", {
+            method: "POST",
+            credentials: "include",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                diaryDate: selectedDate,
+                emotion: emotionMap[selectedEmotion],
+                content: content
+            })
+        })
+            .then(res => {
+                if (!res.ok) throw new Error();
+                alert("기록이 저장되었습니다.");
+            })
+            .catch(() => alert("저장 실패"));
+    }
+
+    /* ===============================
+       AI 응답 생성 (❗ 생략 없음)
+    =============================== */
+    function requestAI() {
+        fetch("/ai/feedback", {
+            method: "POST",
+            credentials: "include",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ date: selectedDate })
+        })
+            .then(res => res.json())
+            .then(data => {
+                const result = document.getElementById("aiResult");
+                result.style.display = "block";
+                result.innerText = data.content;
+            });
+    }
+
+    /* ===============================
+       페이지 진입 시 기존 기록 조회
+    =============================== */
+    fetch(`/today?date=${selectedDate}`)
+        .then(res => {
+            if (!res.ok) return null;
+            return res.json();
+        })
+        .then(data => {
+            if (!data || !data.diary) return;
+
+            const diary = data.diary;
+
+            document.getElementById("diaryText").value = diary.content ?? "";
+
+            const emoji = reverseEmotionMap[diary.emotion];
+            if (emoji) {
+                const btn = document.querySelector(
+                    `.emotion-list button[data-emotion="${emoji}"]`
+                );
+                if (btn) {
+                    btn.classList.add("selected");
+                    selectedEmotion = emoji;
+                }
+            }
+        });
+
+    // if (window.history.replaceState) {
+    //     window.history.replaceState(null, "", "/login");
+    // }
+    //
+    // /* 🔥 BFCache로 복원되면 강제 새로고침 (선택) */
+    // window.addEventListener("pageshow", function (e) {
+    //     if (e.persisted) {
+    //         location.replace("/login");
+    //     }
+    // });
+</script>
+
+</body>
+</html>
