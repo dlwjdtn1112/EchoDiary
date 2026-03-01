@@ -69,7 +69,7 @@ AI를 단순 호출하는 구조가 아닌,
 
 ---
 ---
-##📊 Retrieval 성능 검증
+## 📊 Retrieval 성능 검증
 
 Resona 1.0은 단순 Top-K 기반 벡터 검색이 아닌,
 Threshold 기반 필터링 전략을 적용하여 Retrieval 품질을 정량적으로 검증하고 최적화했습니다.
