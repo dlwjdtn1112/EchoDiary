@@ -69,7 +69,18 @@ AI를 단순 호출하는 구조가 아닌,
 
 ---
 
+##📊 Retrieval 성능 검증
 
+Resona 1.0은 단순 Top-K 기반 벡터 검색이 아닌,
+Threshold 기반 필터링 전략을 적용하여 Retrieval 품질을 정량적으로 검증하고 최적화했습니다.
+
+🔬 실험 방식
+
+4개 테스트 셋 구성
+
+Threshold(0.25 ~ 0.45) 구간별 Precision / Recall / F1-score 측정
+
+평균값 기반 최적 임계값 도출
 
 
 
