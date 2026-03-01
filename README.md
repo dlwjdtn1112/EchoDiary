@@ -68,7 +68,7 @@ AI를 단순 호출하는 구조가 아닌,
 - 마이페이지 기록 조회
 
 ---
-
+---
 ##📊 Retrieval 성능 검증
 
 Resona 1.0은 단순 Top-K 기반 벡터 검색이 아닌,
@@ -96,7 +96,7 @@ Threshold(0.25 ~ 0.45) 구간별 Precision / Recall / F1-score 측정
 
 
 
-
+---
 
 
 
