@@ -74,7 +74,7 @@ AI를 단순 호출하는 구조가 아닌,
 Resona 1.0은 단순 Top-K 기반 벡터 검색이 아닌,
 Threshold 기반 필터링 전략을 적용하여 Retrieval 품질을 정량적으로 검증하고 최적화했습니다.
 
-🔬 실험 방식
+# 🔬 실험 방식
 
 4개 테스트 셋 구성
 
@@ -92,6 +92,27 @@ Threshold(0.25 ~ 0.45) 구간별 Precision / Recall / F1-score 측정
 | 0.35      | 0.575     | 0.500  | 0.750     |
 | 0.40      | 0.417     | 0.292  | 0.750     |
 | 0.45      | 0.000     | 0.000  | 0.000     |
+
+# 🧠 분석 결과
+
+0.25 구간은 Recall은 높지만 Precision 저하로 과검출 발생
+
+0.35 이상부터 Recall이 급격히 감소
+
+0.45 구간은 의미 검색 실패 구간 확인
+
+# 📌 F1-score 기준 최적 Threshold는 0.30
+---
+# 🎯 적용 전략
+
+Top-K 검색 수행
+
+1 - (embedding <=> vector) 기반 cosine similarity 계산
+
+Similarity ≥ 0.30 인 기록만 LLM context로 전달
+
+이를 통해 불필요한 context 전달을 줄이고,
+맥락 정확도 및 응답 신뢰도를 개선했습니다.
 
 
 
