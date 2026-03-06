@@ -147,6 +147,45 @@ Resona 1.0은 단순 LLM 호출이 아닌,
 
 ---
 
+
+
+## 🚀 Resona 1.5 (Chunk 기반 Retrieval 개선)
+
+Resona 1.5는 기존 Resona 1.0의 단순 RAG 구조에서 발생하는
+긴 문서 검색 정확도 문제를 해결하기 위해 Chunk 기반 Retrieval 구조를 도입한 개선 버전입니다.
+
+기존 방식에서는 일기 전체를 하나의 벡터로 저장했기 때문에
+문장이 길어질수록 의미가 희석되어 검색 정확도가 낮아지는 문제가 발생했습니다.
+
+이를 해결하기 위해 일기를 의미 단위로 분할한 Chunk 기반 벡터 저장 구조를 설계했습니다.
+
+### 🔍 개선 구조
+
+일기 작성 후 텍스트를 의미 단위로 Chunk 분할
+
+각 Chunk를 개별 Embedding 벡터로 생성
+
+PostgreSQL(pgvector)에 Chunk 단위로 저장
+
+질문 Embedding 생성 후 Chunk 기반 유사도 검색
+
+유사도가 높은 Chunk만 LLM Context로 전달
+
+### 🎯 개선 효과
+
+긴 일기에서도 의미 단위 검색 가능
+
+Retrieval 정확도 향상
+
+불필요한 Context 감소
+
+LLM 토큰 사용량 감소
+
+RAG 응답 품질 향상
+
+
+
+
 ## 🚀 Resona 2.0 (2026년 4월 출시 예정)
 
 Resona 2.0은 기존 RAG 구조를 확장한 차세대 AI 엔진입니다.
